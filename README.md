@@ -31,6 +31,11 @@ For more details, see the [how to use](HOW_TO_USE.md#-conduct-a-workshop) guide.
 
 Follow this step-by-step tutorial for detailed instructions: [Create a workshop](https://microsoft.github.io/moaw/workshop/create-workshop/).
 
+You can also create your new workshop with a ready to use dev containers:
+
+* [![Open in Visual Studio Code](https://img.shields.io/static/v1?label=&message=Open%20in%20Visual%20Studio%20Code&color=blue&logo=visualstudiocode&style=flat)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/moaw)
+* [![Open in Github Codespaces](https://img.shields.io/static/v1?label=&message=Open%20in%20Github%20Codespaces&color=2f362d&logo=github)](https://codespaces.new/microsoft/moaw?quickstart=1&hide_repo_select=true)
+
 ## Contributing
 
 All contributions are welcome, including translations, new workshops, bug fixes, etc.
