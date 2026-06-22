@@ -10,9 +10,9 @@ import { getRepoPath } from '../shared/loader';
   standalone: true,
   imports: [CommonModule, RevealComponent],
   template: `
-    <div *ngIf="deck; else noDeck" class="deck">
+    <main *ngIf="deck; else noDeck" class="deck">
       <app-reveal [deck]="deck"></app-reveal>
-    </div>
+    </main>
     <ng-template #noDeck>
       <p *ngIf="!loading">Could not load slide deck :(</p>
     </ng-template>
@@ -24,12 +24,12 @@ export class DeckComponent implements OnInit {
   deck: Deck | undefined;
 
   async ngOnInit() {
-    const { src, slide, wtid, ocid } = getQueryParams();
+    const { src, slide, wtid, ocid, vars } = getQueryParams();
     const repoPath = getRepoPath(src);
 
     this.loading = true;
     try {
-      this.deck = await loadDeck(repoPath, { wtid, ocid });
+      this.deck = await loadDeck(repoPath, { wtid, ocid, vars });
     } catch (error) {
       console.error(error);
     }

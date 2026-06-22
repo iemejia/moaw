@@ -1,3 +1,55 @@
+# [cli-1.6.0](https://github.com/microsoft/moaw/compare/cli-1.5.2...cli-1.6.0) (2026-01-23)
+
+
+### Features
+
+* **cli:** add translate command using Copilot SDK ([e72aaca](https://github.com/microsoft/moaw/commit/e72aaca0e3a82944ac97a529a19963cac5e1be40))
+
+# [cli-1.5.2](https://github.com/microsoft/moaw/compare/cli-1.5.1...cli-1.5.2) (2026-01-22)
+
+
+### Bug Fixes
+
+* **cli:** moaw serve not handling assets correctly for translations ([#174](https://github.com/microsoft/moaw/issues/174)) ([cb6c2a5](https://github.com/microsoft/moaw/commit/cb6c2a56358c5829a7ba646828bafd2dc106299d))
+
+# [cli-1.5.1](https://github.com/microsoft/moaw/compare/cli-1.5.0...cli-1.5.1) (2024-06-04)
+
+
+### Bug Fixes
+
+* **cli:** incorrect repo parsing ([85f2b3d](https://github.com/microsoft/moaw/commit/85f2b3d1f31f62da2f7f265127596b98073fed95))
+
+# [cli-1.5.0](https://github.com/microsoft/moaw/compare/cli-1.4.0...cli-1.5.0) (2024-06-04)
+
+
+### Bug Fixes
+
+* **cli:** https git repo not being detected ([040e72f](https://github.com/microsoft/moaw/commit/040e72fcdf600dd95b9e53f8866ac9a79a36f202))
+
+
+### Features
+
+* **cli:** update preview URL when using Codespaces ([124a9eb](https://github.com/microsoft/moaw/commit/124a9ebd3ace12c8751534aaa65241609b677c98))
+
+# [cli-1.4.0](https://github.com/microsoft/moaw/compare/cli-1.3.1...cli-1.4.0) (2024-01-23)
+
+
+### Bug Fixes
+
+* **cli:** broken link command on windows ([b362b27](https://github.com/microsoft/moaw/commit/b362b27f78b9379aac077bde9ec9c83b7cb564d7))
+
+
+### Features
+
+* **cli:** add build command ([8138361](https://github.com/microsoft/moaw/commit/8138361dc81da213ff7b918e721e7790d5aaedab))
+
+# [cli-1.3.1](https://github.com/microsoft/moaw/compare/cli-1.3.0...cli-1.3.1) (2024-01-17)
+
+
+### Bug Fixes
+
+* **cli:** correct preview workshop URL when there are subfolders ([3627306](https://github.com/microsoft/moaw/commit/3627306b26f23b84c4790afaf5da6241e880dc44))
+
 # [@moaw/cli-v1.3.0](https://github.com/microsoft/moaw/compare/cli-1.2.1...cli-1.3.0) (2023-07-20)
 
 

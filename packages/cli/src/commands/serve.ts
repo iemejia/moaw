@@ -50,10 +50,19 @@ export async function serve(options: ServeOptions = {}) {
       debug(`Using first workshop found: ${workshopFile}`);
       debug(`Workshop folder: ${workshopFolder}`);
       targetPath = isCurrentFolder ? workshopFile : workshopFolder;
+      debug(`Target path: ${targetPath}`);
       isPathFolder = !isCurrentFolder;
     }
 
-    const startPath = `/workshop/${isPathFolder ? targetPath + '/' : path.basename(targetPath)}`;
+    // Check if the target is in a translations folder
+    const absoluteTargetPath = path.resolve(targetPath);
+    const workshopDir = path.dirname(absoluteTargetPath);
+    const isTranslation = path.basename(workshopDir) === 'translations';
+    const workshopRoot = isTranslation ? path.dirname(workshopDir) : workshopDir;
+
+    const startPath = isTranslation
+      ? `/workshop/translations/${path.basename(targetPath)}`
+      : `/workshop/${path.basename(targetPath) + (isPathFolder ? '/' : '')}`;
 
     browserSync.init(
       {
@@ -66,13 +75,13 @@ export async function serve(options: ServeOptions = {}) {
         notify: false,
         ghostMode: false,
         ignore: ['node_modules'],
-        files: [`${path.dirname(targetPath)}/**/*`],
+        files: [`${workshopRoot}/**/*`],
         server: {
           baseDir: [path.join(__dirname, '../..', websitePath)],
           directory: true,
           routes: {
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            '/workshops': path.dirname(targetPath)
+            '/workshops': workshopRoot
           }
         },
         logLevel: options.verbose ? 'info' : 'silent',
@@ -92,7 +101,12 @@ export async function serve(options: ServeOptions = {}) {
           throw error;
         }
 
-        const url = `http://${host}:${port}${startPath}`;
+        const codespace = process.env.CODESPACE_NAME;
+        const url =
+          host === 'localhost' && codespace
+            ? `https://${codespace}-${port}.app.github.dev${startPath}`
+            : `http://${host}:${port}${startPath}`;
+
         console.info(`Preview workshop at ${url}`);
         console.info(`Watching for changes...`);
       }

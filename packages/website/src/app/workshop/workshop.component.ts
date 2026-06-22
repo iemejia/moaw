@@ -30,8 +30,12 @@ import { getRepoPath } from '../shared/loader';
   template: `
     <div (click)="sidebar.toggleOpen(false)" class="full-viewport">
       <app-header [title]="workshop?.shortTitle || 'Workshop'" [sidebar]="sidebar"></app-header>
-      <div class="content">
-        <app-sidebar #sidebar="sidebar" [links]="menuLinks"></app-sidebar>
+      <main class="content">
+        <app-sidebar
+          #sidebar="sidebar"
+          [links]="menuLinks"
+          [numbering]="workshop?.meta?.navigation_numbering"
+        ></app-sidebar>
         <app-loader
           id="workshop"
           [loading]="loading"
@@ -54,7 +58,7 @@ import { getRepoPath } from '../shared/loader';
           </div>
           <app-footer></app-footer>
         </app-loader>
-      </div>
+      </main>
       <ng-template #noWorkshop>
         <p class="container" *ngIf="!loading">Could not load workshop :(</p>
       </ng-template>
@@ -139,7 +143,7 @@ export class WorkshopComponent {
   }
 
   async ngAfterViewInit() {
-    const { src, step, wtid, ocid } = getQueryParams();
+    const { src, step, wtid, ocid, vars } = getQueryParams();
     const repoPath = getRepoPath(src);
     if (!repoPath) {
       redirectRoutePath('', true);
@@ -148,7 +152,7 @@ export class WorkshopComponent {
 
     this.loading = true;
     try {
-      this.workshop = await loadWorkshop(repoPath, { wtid, ocid });
+      this.workshop = await loadWorkshop(repoPath, { wtid, ocid, vars });
       this.menuLinks = createMenuLinks(this.workshop);
       this.updateAuthors();
     } catch (error) {

@@ -6,22 +6,23 @@ import { getCurrentRoute, getPathAfterRoute, redirectRoutePath } from '../router
 const cdnUrl = 'https://cdn.jsdelivr.net/npm/';
 const assetsFolder = 'assets/';
 const defaultWtid = 'javascript-76678-cxa';
-const defaultOcid = 'AID3051475';
+const defaultOcid = undefined;
 
 export interface LoaderOptions {
   ocid?: string;
   wtid?: string;
+  vars?: string;
 }
 
-export interface FileContents extends FrontMatterParseResult {
+export interface FileContents<E = {}> extends FrontMatterParseResult<E> {
   githubUrl: string;
 }
 
-export async function loadFile(
+export async function loadFile<E = {}>(
   repoPath: string,
   options?: LoaderOptions,
   redirectWrongType = true
-): Promise<FileContents> {
+): Promise<FileContents<E>> {
   const gitHubFileUrl = getFileUrl(repoPath);
   const response = await fetch(gitHubFileUrl);
 
@@ -31,8 +32,9 @@ export async function loadFile(
     throw new Error(error);
   }
 
-  const text = await response.text();
-  let { meta, markdown } = parseFrontMatter(text);
+  let text = await response.text();
+  text = replaceVariables(text, options?.vars);
+  let { meta, markdown, ...extraProperties } = parseFrontMatter<E>(text);
 
   const currentRoute = getCurrentRoute();
   if (redirectWrongType && meta.type && meta.type !== currentRoute?.id) {
@@ -49,7 +51,8 @@ export async function loadFile(
   return {
     meta,
     markdown,
-    githubUrl: gitHubFileUrl
+    githubUrl: gitHubFileUrl,
+    ...extraProperties
   };
 }
 
@@ -59,11 +62,11 @@ export function updateAssetsBasePath(markdown: string, baseUrl: string): string 
   }
 
   // Match all occurrences of unescaped "assets/"
-  const assetsRegex = new RegExp(`(?<!\\\\|\\\\\.\/)(?:\.\/)?${assetsFolder}`, 'gm');
-  markdown = markdown.replace(assetsRegex, `${baseUrl}/${assetsFolder}`);
+  const assetsRegex = new RegExp(`(?<!\\\\|\\\\\.\/)([.]?[.]\/)?${assetsFolder}`, 'gm');
+  markdown = markdown.replace(assetsRegex, (_match, root) => `${baseUrl}/${root === '../' ? root : ''}${assetsFolder}`);
 
   // Match all occurrences of escaped "assets/"
-  const escapedAssetsRegex = new RegExp(`\\\\(?:\.\/)?${assetsFolder}`, 'gm');
+  const escapedAssetsRegex = new RegExp(`\\\\(?:[.]?[.]\/)?${assetsFolder}`, 'gm');
   markdown = markdown.replace(escapedAssetsRegex, (match) => match.slice(1));
 
   return markdown;
@@ -120,4 +123,31 @@ export function injectCode(code: string): void {
 
 export function getRepoPath(source: string): string {
   return source ?? getPathAfterRoute();
+}
+
+export function replaceVariables(text: string, vars?: string) {
+  if (vars) {
+    const variables = vars
+      .split(',')
+      .map((variable) => {
+        const decodedVariable = decodeURIComponent(variable);
+        const [key, ...value] = decodedVariable.trim().split(':');
+        return Boolean(key) ? [key, value.join(':')] : undefined;
+      })
+      .filter(Boolean) as [string, string][];
+
+    for (const [key, value] of variables) {
+      // Replace $$key$$ with value (but not \$$key$$)
+      console.log(`Replacing $$${key}$$ with "${value}"`);
+      text = text.replaceAll(new RegExp(`(?<!\\\\)\\$\\$${key}(:[^$\n]+?)?\\$\\$`, 'gm'), value);
+    }
+  }
+
+  // Replace $$key:default_value$$ with default_value (but not \$$key:default_value$$)
+  text = text.replaceAll(/(?<!\\)\$\$[^$\s]+:[^$\n]+?\$\$/gm, (match) => match.split(':')[1].slice(0, -2));
+
+  // Replace escaped \$$key$$ with $$key$$
+  text = text.replaceAll(/(\\\$\$[^$\n]+\$\$)/gm, (match) => match.slice(1));
+
+  return text;
 }

@@ -16,7 +16,7 @@ import { getQueryParams } from '../router';
   template: `
     <div class="full-viewport">
       <app-header [title]="page?.shortTitle || page?.title"></app-header>
-      <div class="content">
+      <main class="content">
         <app-loader [loading]="loading" id="page" class="scrollable" [class.container]="loading">
           <div *ngIf="page; else noPage" class="container no-sidebar">
             <markdown
@@ -28,7 +28,7 @@ import { getQueryParams } from '../router';
           </div>
           <app-footer></app-footer>
         </app-loader>
-      </div>
+      </main>
       <ng-template #noPage>
         <p class="container" *ngIf="!loading">Could not load page :(</p>
       </ng-template>
@@ -42,12 +42,12 @@ export class PageComponent implements OnInit {
   page: Page | undefined;
 
   async ngOnInit() {
-    const { src, wtid, ocid } = getQueryParams();
+    const { src, wtid, ocid, vars } = getQueryParams();
     const repoPath = getRepoPath(src);
 
     this.loading = true;
     try {
-      this.page = await loadPage(repoPath, { wtid, ocid });
+      this.page = await loadPage(repoPath, { wtid, ocid, vars });
     } catch (error) {
       console.error(error);
     }
